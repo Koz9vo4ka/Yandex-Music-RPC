@@ -22,7 +22,8 @@ def get_token():
     capabilities['goog:loggingPrefs'] = {'performance': 'ALL'}
     driver = webdriver.Chrome(desired_capabilities=capabilities,
                               executable_path=ChromeDriverManager().install())
-    driver.get("https://oauth.yandex.ru/authorize?response_type=token&client_id=23cabbbdc6cd418abb4b39c32c41195d")
+    driver.get(
+        "https://oauth.yandex.ru/authorize?response_type=token&client_id=23cabbbdc6cd418abb4b39c32c41195d")
 
     token = None
 
@@ -47,5 +48,12 @@ def get_token():
 
     return token
 
+token = (get_token())
+print(token)
 
-print(get_token())
+f = open('config.ini', "w")
+f.write(f'[token]\ntoken = {token}')
+f.close
+
+
+
