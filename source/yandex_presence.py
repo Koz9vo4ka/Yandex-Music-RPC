@@ -42,11 +42,20 @@ class Presence:
 	def __init__(self) -> None:
 		self.token = getToken()
 		self.client = None
-		self.currentTrack = None
+		self.currentTrack = {
+			'success': None,
+			'name': None,
+			'artists': None,
+			'album': None,
+			'link': None,
+			'time': None,
+			'og-image': None
+			}
 		self.rpc = None
 		self.running = False
 
 	def start(self) -> None:
+		self.start_time = time.time()
 		self.running = True
 		try:
 			if "Discord.exe" not in (p.name() for p in psutil.process_iter()):
@@ -65,33 +74,45 @@ class Presence:
 				# return
 				self.running = False
 			if self.currentTrack != (ongoing_track := self.getTrack()):
-				print(f"[YMDS] -> Текущий трек {ongoing_track['name']}")
-				try:
-					if ongoing_track['success']:
-						self.rpc.update(
-							details=ongoing_track['name'],
-							state=ongoing_track['artists'],
-							large_image=f"{ongoing_track['og-image']}",
-							large_text=ongoing_track['album'],
-							small_image="https://music.yandex.com/blocks/meta/i/og-image.png",
-							small_text=ongoing_track['time'],
-							buttons=[{'label': 'Слушать', 'url': ongoing_track['link']}]
-						)
-					if ongoing_track['success'] == False:
-						self.rpc.update(
-							details=ongoing_track['name'],
-							large_image="https://i.gifer.com/3OUSF.gif",
-						)
-					self.currentTrack = ongoing_track
-				except Exception:
-					pass
-
+				if self.currentTrack['name'] != ongoing_track['name']:
+					self.start_time = time.time()
+					print(f"[YMDS] -> Текущий трек {ongoing_track['name']}")
+					try:
+						if ongoing_track['success']:
+							self.rpc.update(
+								details=ongoing_track['name'],
+								state=ongoing_track['artists'],
+								large_image=f"{ongoing_track['og-image']}",
+								large_text=ongoing_track['album'],
+								small_image="https://music.yandex.com/blocks/meta/i/og-image.png",
+								small_text=ongoing_track['time'],
+								buttons=[{'label': 'Слушать', 'url': ongoing_track['link']}]
+							)
+						if ongoing_track['success'] == False:
+							self.rpc.update(
+								details=ongoing_track['name'],
+								large_image="https://i.gifer.com/3OUSF.gif",
+								small_image="https://music.yandex.com/blocks/meta/i/og-image.png",
+								small_text='Прямой Эфир',
+							)
+						self.currentTrack['name'] = ongoing_track['name']
+					except Exception:
+						pass
+				elif ongoing_track['s-time'] == False:
+					self.rpc.clear()
+						# self.rpc.update(
+						# 	large_image="https://cdn-icons-png.flaticon.com/128/7911/7911796.png",
+						# 	small_image="https://music.yandex.com/blocks/meta/i/og-image.png"
+						# )
+				
 	def getTrack(self) -> dict:
 		try:
+			currect_time = int(time.time())
 			queues = self.client.queues_list()
 			last_queue = self.client.queue(queues[0].id)
 			track_id = last_queue.get_current_track()
 			track = track_id.fetch_track()
+			print(track.state)
 		except AttributeError:
 			return {
 				'success': False,
@@ -105,13 +126,14 @@ class Presence:
 			}
 		return {
 			'success': True,
-			'name': f"{track.title} ",
+			'name': f"{track.title}",
 			'artists': f'{", ".join(track.artists_name())}',
 			'album': f"{track['albums'][0]['title']}",
 			'link': f"https://music.yandex.ru/album/{track['albums'][0]['id']}/track/{track['id']}/",
 			'time': f'{0 if track.duration_ms // 60000 < 10 else ""}{track.duration_ms // 60000}'
 						f':{0 if track.duration_ms % 60000 // 1000 < 10 else ""}{track.duration_ms % 60000 // 1000}',
-			'og-image': "https://" + track.og_image[:-2] + "300x300"
+			'og-image': f"https://{track.og_image[:-2]}300x300",
+			's-time': True if self.start_time + track.duration_ms + 60 > currect_time else False,
 		}
 
 
