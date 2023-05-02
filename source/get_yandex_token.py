@@ -53,7 +53,7 @@ print(token)
 
 f = open('config.ini', "w")
 f.write(f'[token]\ntoken = {token}')
-f.close
+f.close()
 
 
 
