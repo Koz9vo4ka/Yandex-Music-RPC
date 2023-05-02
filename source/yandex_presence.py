@@ -7,7 +7,7 @@ import psutil
 import os.path
 
 
-client_id = 'Discord-токен'
+client_id = '1102205912640409704'
 
 
 configCreate = configparser.ConfigParser()
@@ -74,7 +74,7 @@ class Presence:
 				# return
 				self.running = False
 			if self.currentTrack != (ongoing_track := self.getTrack()):
-				if self.currentTrack['name'] != ongoing_track['name']:
+				if self.currentTrack['name'] != ongoing_track['name'] or self.currentTrack['artists'] != ongoing_track['artists']:
 					self.start_time = time.time()
 					print(f"[YMDS] -> Текущий трек {ongoing_track['name']}")
 					try:
@@ -100,10 +100,6 @@ class Presence:
 						pass
 				elif ongoing_track['s-time'] == False:
 					self.rpc.clear()
-						# self.rpc.update(
-						# 	large_image="https://cdn-icons-png.flaticon.com/128/7911/7911796.png",
-						# 	small_image="https://music.yandex.com/blocks/meta/i/og-image.png"
-						# )
 				
 	def getTrack(self) -> dict:
 		try:
@@ -112,7 +108,6 @@ class Presence:
 			last_queue = self.client.queue(queues[0].id)
 			track_id = last_queue.get_current_track()
 			track = track_id.fetch_track()
-			print(track.state)
 		except AttributeError:
 			return {
 				'success': False,
