@@ -5,6 +5,7 @@ import time
 from yandex_music import Client
 import psutil
 import os.path
+from exceptions import TokenNotFound
 
 
 client_id = '1102205912640409704'
@@ -29,10 +30,7 @@ def getToken():
 	config = configparser.ConfigParser()
 	config.read('config.ini')
 	if config.get('token', 'token') == 'None':
-		token_ = input("[YMDS] -> Пожалуйста, введите ваш токен, который вы получили c файла get_yandex_token: ")
-		config.set('token', 'token', token_)
-		with open('config.ini', 'w') as f:
-			config.write(f)
+		TokenNotFound()
 	else:
 		print('[YMDS] -> Токен был успешно получен')
 	return config.get('token', 'token')
