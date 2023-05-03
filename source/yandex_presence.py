@@ -1,11 +1,11 @@
-import pypresence
 from pypresence import DiscordNotFound
-import configparser
-import time
-from yandex_music import Client
-import psutil
-import os.path
 from exceptions import TokenNotFound
+from yandex_music import Client
+import configparser
+import pypresence
+import os.path
+import psutil
+import time
 
 
 client_id = '1102205912640409704'
@@ -40,15 +40,7 @@ class Presence:
 	def __init__(self) -> None:
 		self.token = getToken()
 		self.client = None
-		self.currentTrack = {
-			'success': None,
-			'name': None,
-			'artists': None,
-			'album': None,
-			'link': None,
-			'time': None,
-			'og-image': None
-			}
+		self.currentTrack = {'success': None, 'name': None, 'artists': None, 'album': None, 'link': None, 'time': None, 'og-image': None}
 		self.rpc = None
 		self.running = False
 
@@ -58,7 +50,6 @@ class Presence:
 		try:
 			if "Discord.exe" not in (p.name() for p in psutil.process_iter()):
 				print("[YMDS] -> Discord не запущен")
-				# return
 				self.running = False
 			self.currentTrack = self.getTrack()
 			self.rpc = pypresence.Presence(client_id)
@@ -71,7 +62,7 @@ class Presence:
 				print("[YMDS] -> Discord был закрыт")
 				# return
 				self.running = False
-			if self.currentTrack != (ongoing_track := self.getTrack()):
+			elif self.currentTrack != (ongoing_track := self.getTrack()):
 				if self.currentTrack['name'] != ongoing_track['name'] or self.currentTrack['artists'] != ongoing_track['artists']:
 					self.start_time = time.time()
 					print(f"[YMDS] -> Текущий трек {ongoing_track['name']}")
@@ -93,7 +84,7 @@ class Presence:
 								small_image="https://music.yandex.com/blocks/meta/i/og-image.png",
 								small_text='Прямой Эфир',
 							)
-						self.currentTrack['name'] = ongoing_track['name']
+						self.currentTrack = ongoing_track
 					except Exception:
 						pass
 				elif ongoing_track['s-time'] == False:
