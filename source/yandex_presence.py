@@ -30,7 +30,7 @@ def getToken():
 	config = configparser.ConfigParser()
 	config.read('config.ini')
 	if config.get('token', 'token') == 'None':
-		TokenNotFound()
+		raise TokenNotFound()
 	else:
 		print('[YMDS] -> Токен был успешно получен')
 	return config.get('token', 'token')
