@@ -114,8 +114,7 @@ class Presence:
 			'artists': f'{", ".join(track.artists_name())}',
 			'album': f"{track['albums'][0]['title']}",
 			'link': f"https://music.yandex.ru/album/{track['albums'][0]['id']}/track/{track['id']}/",
-			'time': f'{0 if track.duration_ms // 60000 < 10 else ""}{track.duration_ms // 60000}'
-						f':{0 if track.duration_ms % 60000 // 1000 < 10 else ""}{track.duration_ms % 60000 // 1000}',
+			'time': f'{track.duration_ms//(60*1000)%60:02d}:{track.duration_ms//1000%(60):02d}',
 			'og-image': f"https://{track.og_image[:-2]}300x300",
 			's-time': True if self.start_time + track.duration_ms + 60 > currect_time else False,
 		}
