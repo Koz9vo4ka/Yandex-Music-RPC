@@ -77,7 +77,7 @@ class Presence:
 								state=ongoing_track['artists'],
 								large_image=f"{ongoing_track['og-image']}",
 								large_text=ongoing_track['album'],
-								small_image="https://music.yandex.com/blocks/meta/i/og-image.png",
+								small_image="og-image",
 								small_text=ongoing_track['time'],
 								buttons=[{'label': 'Слушать', 'url': ongoing_track['link']}]
 							)
@@ -85,7 +85,7 @@ class Presence:
 							self.rpc.update(
 								details=ongoing_track['name'],
 								large_image="https://i.gifer.com/3OUSF.gif",
-								small_image="https://music.yandex.com/blocks/meta/i/og-image.png",
+								small_image="og-image",
 								small_text='Прямой Эфир',
 							)
 						self.currentTrack = ongoing_track
