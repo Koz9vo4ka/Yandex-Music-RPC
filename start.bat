@@ -1,4 +1,12 @@
+@echo off
+
 cd source
 
-py yandex_presence.py
+if exist *config.ini* (
+  py yandex_presence.py
+) else (
+  cd ../
+  get_yandex_token.bat
+)
+
 pause
