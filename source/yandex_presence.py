@@ -1,3 +1,4 @@
+from yandex_music.exceptions import NotFoundError
 from pypresence import DiscordNotFound
 from exceptions import TokenNotFound
 from yandex_music import Client
@@ -65,7 +66,10 @@ class Presence:
 			elif self.currentTrack != (ongoing_track := self.getTrack()):
 				if self.currentTrack['name'] != ongoing_track['name'] or self.currentTrack['artists'] != ongoing_track['artists']:
 					self.start_time = time.time()
-					print(f"[YMDS] -> Текущий трек {ongoing_track['name']}")
+					if self.last_queue.context.type == 'radio':
+						print(f"[YMDS] -> {ongoing_track['name']}")
+					else:
+						print(f"[YMDS] -> Текущий трек {ongoing_track['name']}")
 					try:
 						if ongoing_track['success']:
 							self.rpc.update(
@@ -94,19 +98,24 @@ class Presence:
 		try:
 			currect_time = int(time.time())
 			queues = self.client.queues_list()
-			last_queue = self.client.queue(queues[0].id)
-			track_id = last_queue.get_current_track()
+			self.last_queue = self.client.queue(queues[0].id)
+			track_id = self.last_queue.get_current_track()
 			track = track_id.fetch_track()
 		except AttributeError:
 			return {
 				'success': False,
-				'name': "В потоке",
+				'name': "",
 			}
-		except Exception as ex:
-			print(ex)
+		except NotFoundError:
 			return {
 				'success': False,
-				'name': "В потоке",
+				'name': "",
+			}
+		except Exception:
+			live = {'genre':'жанру','user':'плейлисту','editorial':'плейлисту',"mood":"настроению",'activity':"активности",'epoch':'эпохе'}
+			return {
+				'success': False,
+				'name': f'Поток по {live[self.last_queue.context.id.split(":")[0]]} "{self.last_queue.context.description}"'
 			}
 		return {
 			'success': True,
