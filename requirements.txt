@@ -1,0 +1,5 @@
+mypy
+psutil
+flake8
+pypresence
+yandex_music
