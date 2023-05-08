@@ -53,7 +53,6 @@ class Presence:
             'time': None,
             'og-image': None
         }
-        
 
     def start(self) -> None:
         self.start_time = time.time()
